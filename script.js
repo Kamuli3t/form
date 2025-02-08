@@ -106,12 +106,14 @@ const loginMessage = document.createElement("li");
 
 // Listen for the form's "submit" event
 loginForm.addEventListener("submit", (event) => {
-  event.preventDefault(); // Prevent the default submission
+  event.preventDefault(); // Prevent default submission
 
-  // Clear any previous messages
+  // Clear previous success and error messages
   successDisplay.innerHTML = "";
+  const errorDisplay = document.getElementById("errorDisplay");
+  errorDisplay.innerHTML = "";
+  errorDisplay.style.display = "none";
 
-  // 1) Get user input values
   const typedUsername = loginForm
     .querySelector('input[name="username"]')
     .value.trim();
@@ -120,38 +122,45 @@ loginForm.addEventListener("submit", (event) => {
     .value.trim();
   const keepLoggedIn = loginForm.querySelector('input[name="persist"]').checked;
 
-  // 2) Retrieve stored username/password from localStorage
   const storedUsername = localStorage.getItem("Username");
   const storedPassword = localStorage.getItem("Password");
-  // If there is no user info stored at all
+
+  let errorLi;
+
+  // 1) Check if user exists
   if (!storedUsername || !storedPassword) {
-    loginMessage.textContent =
+    errorLi = document.createElement("li");
+    errorLi.textContent =
       "No user found in localStorage. Please register first.";
+    showErrorDisplay(errorDisplay, errorLi);
     return;
   }
 
-  // 3) Check the typed username (case-insensitive comparison)
+  // 2) Check username
   if (typedUsername.toLowerCase() !== storedUsername) {
-    loginMessage.textContent = "Username does not exist.";
+    errorLi = document.createElement("li");
+    errorLi.textContent = "Username does not exist.";
+    showErrorDisplay(errorDisplay, errorLi);
     return;
   }
 
-  // 4) Check the password
+  // 3) Check password
   if (typedPassword !== storedPassword) {
-    loginMessage.textContent = "Incorrect password.";
+    errorLi = document.createElement("li");
+    errorLi.textContent = "Incorrect password.";
+    showErrorDisplay(errorDisplay, errorLi);
     return;
   }
 
-  // 5) If all validation passes:
-  //    - Clear the form fields
+  // 4) If successful login:
   loginForm.reset();
-
-  //    - Display a success message
-  successDisplay.appendChild(loginMessage);
+  successDisplay.innerHTML = "";
   successDisplay.style.display = "flex";
-  let successMsg = "Login successful!";
+
+  let successMsg = document.createElement("li");
+  successMsg.textContent = "Login successful!";
   if (keepLoggedIn) {
-    successMsg += " You will be kept logged in.";
+    successMsg.textContent += " You will be kept logged in.";
   }
-  loginMessage.textContent = successMsg;
+  successDisplay.appendChild(successMsg);
 });
