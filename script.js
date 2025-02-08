@@ -152,7 +152,7 @@ loginForm.addEventListener("submit", (event) => {
     return;
   }
 
-  // 4) If successful login:
+  // 4) If successfully login:
   loginForm.reset();
   successDisplay.innerHTML = "";
   successDisplay.style.display = "flex";
